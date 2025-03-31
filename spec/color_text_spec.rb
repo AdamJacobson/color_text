@@ -112,7 +112,7 @@ describe String do
 
     it 'raises an error with invalid arguments' do
       expect{ t.in }.to raise_error(ArgumentError)
-      # expect{ t.in(14.8) }.to raise_error(ArgumentError)
+      expect{ t.in(14.8) }.to raise_error(ArgumentError)
     end
   end
 

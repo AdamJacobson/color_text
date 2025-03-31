@@ -55,12 +55,14 @@ class String
     "256" => "48;5",
     "RGB" => "48;2",
     "OFFSET" => 10,
+    "VALID_CODES" => [ BASE_COLORS ].reduce({}, :merge),
   }
 
   FOREGROUND = {
     "256" => "38;5",
     "RGB" => "38;2",
     "OFFSET" => 0,
+    "VALID_CODES" => [ BASE_COLORS, TEXT_STYLES ].reduce({}, :merge),
   }
 
   INVALID_ARGUMENTS_ERROR = [
@@ -131,17 +133,17 @@ class String
     when Integer
       ansify(type["256"], argument.to_s)
     when Array
-      raise ArgumentError.new("Invalid RGB color code.") unless argument.length == 3 && argument.all?(Integer)
+      raise ArgumentError.new("Invalid RGB color code: '#{argument.join(", ")}'") unless argument.length == 3 && argument.all?(Integer)
       ansify(type["RGB"], *argument)
     when String, Symbol
-      arg = argument.to_s
-      if BASE_COLORS[arg]
-        ansify(BASE_COLORS[arg] + type["OFFSET"])
+      style = type["VALID_CODES"][argument.to_s]
+      if style
+        ansify((style) + type["OFFSET"])
       else
-        raise ArgumentError.new("Unrecognized style: #{arg}")
+        raise ArgumentError.new("Unrecognized style: '#{argument}'")
       end
     else
-      ansify(ANSI_CODES[arg])
+      raise ArgumentError.new("Invalid argument: '#{argument}'")
     end
   end
 
