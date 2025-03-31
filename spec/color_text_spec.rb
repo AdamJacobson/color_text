@@ -79,39 +79,40 @@ describe String do
       expect(t.in("bright_blue")).to  have_ansi_encoding(t, 94)
     end
 
-    # it 'can apply styles' do
-    #   expect(t.in(:bold)).to       have_ansi_encoding(t, 1)
-    #   expect(t.in("underline")).to have_ansi_encoding(t, 4)
-    # end
+    it 'can apply styles' do
+      expect(t.in(:bold)).to       have_ansi_encoding(t, 1)
+      expect(t.in("underline")).to have_ansi_encoding(t, 4)
+    end
 
-    # it 'accepts multiple distinct basic styles' do
-    #   expect(t.in("red", :bold)).to have_ansi_encoding(t, 31;1)
-    # end
+    it 'accepts multiple distinct basic styles' do
+      expect(t.in("red", :bold)).to have_ansi_encoding(t, 31, 1)
+    end
 
-    # it 'accepts multiple complex styles' do
-    #   expect(t.in("italic", [52, 144, 6])).to have_ansi_encoding(t, 3;38;2;52;144;6)
-    # end
+    it 'accepts multiple complex styles' do
+      expect(t.in("italic", [52, 144, 6])).to have_ansi_encoding(t, 3, 38, 2, 52, 144, 6)
+    end
 
     it 'can colorize a string with an arbitrary 256 color' do
       expect(t.in(99)).to have_ansi_encoding(t, 38, 5, 99)
     end
 
     it 'can colorize a string with an arbirtary RGB code' do
-      expect(t.in(99, 15, 187)).to   have_ansi_encoding(t, 38, 2, 99, 15, 187)
-      expect(t.in(0, 255, 0)).to     have_ansi_encoding(t, 38, 2, 0, 255, 0)
-      expect(t.in(900, 800, 700)).to have_ansi_encoding(t, 38, 2, 900, 800, 700)
+      expect(t.in([99, 15, 187])).to   have_ansi_encoding(t, 38, 2, 99, 15, 187)
+      expect(t.in([0, 255, 0])).to     have_ansi_encoding(t, 38, 2, 0, 255, 0)
+      expect(t.in([900, 800, 700])).to have_ansi_encoding(t, 38, 2, 900, 800, 700)
     end
 
     it 'raises error for unrecognized colors' do
       expect{ t.in(:banana) }.to       raise_error(ArgumentError, /banana/)
       expect{ t.in(:bright_flarg) }.to raise_error(ArgumentError, /bright_flarg/)
     end
-
+    
     it 'recognizes other named colors'
     # Test "orange", "brown", "indigo"
 
     it 'raises an error with invalid arguments' do
-      expect{ t.in(199, 0) }.to raise_error(ArgumentError)
+      expect{ t.in }.to raise_error(ArgumentError)
+      # expect{ t.in(14.8) }.to raise_error(ArgumentError)
     end
   end
 
@@ -121,9 +122,9 @@ describe String do
     end
 
     it 'can colorize a string background with an arbirtary RGB code' do
-      expect(t.on(99, 15, 187)).to   have_ansi_encoding(t, 48, 2, 99, 15, 187)
-      expect(t.on(0, 255, 0)).to     have_ansi_encoding(t, 48, 2, 0, 255, 0)
-      expect(t.on(900, 800, 700)).to have_ansi_encoding(t, 48, 2, 900, 800, 700)
+      expect(t.on([99, 15, 187])).to   have_ansi_encoding(t, 48, 2, 99, 15, 187)
+      expect(t.on([0, 255, 0])).to     have_ansi_encoding(t, 48, 2, 0, 255, 0)
+      expect(t.on([900, 800, 700])).to have_ansi_encoding(t, 48, 2, 900, 800, 700)
     end
 
     it 'can colorize a string background with a named color as symbol or string' do
@@ -146,7 +147,8 @@ describe String do
     end
 
     it 'raises an error with invalid arguments' do
-      expect{ t.on(199, 0) }.to raise_error(ArgumentError)
+      expect{ t.on }.to raise_error(ArgumentError)
+      # expect{ t.on(199, 0) }.to raise_error(ArgumentError)
     end
   end
 

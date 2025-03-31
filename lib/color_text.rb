@@ -62,13 +62,13 @@ class String
     "RGB" => "38;2",
     "OFFSET" => 0,
   }
-  
+
   INVALID_ARGUMENTS_ERROR = [
     "Invalid Arguments",
     "Must be one of the following:",
-    "\t- 3 integers, 0 to 255, denoting Red, Green and Blue values",
-    "\t- 1 integer, 0 to 255",
-    "\t- One color name as a string or symbol"
+    "\t- Array of 3 integers, 0 to 255, denoting Red, Green and Blue values",
+    "\t- Integer, 0 to 255",
+    "\t- One color name as a string or symbol",
   ]
 
   def in(*args)
@@ -112,24 +112,36 @@ class String
   private
 
   def colorize_with_arguments(type, *args)
-    if args.length == 3 && args.all?(Integer)
-      ansify(type["RGB"], *args)
-    elsif args.length == 1
-      case args[0]
-      when Integer
-        ansify(type["256"], args[0].to_s)
-      when String, Symbol
-        arg = args[0].to_s
-        if BASE_COLORS[arg]
-          ansify(BASE_COLORS[arg] + type["OFFSET"])
-        else
-          raise ArgumentError.new("Unrecognized color: #{arg}")
-        end
+    if args.length > 1
+      result = self
+      args.each do |arg|
+        result = result.send(:colorize_with_argument, type, arg)
+      end
+
+      return result
+    end
+
+    colorize_with_argument(type, args[0])
+  end
+
+  def colorize_with_argument(type, argument)
+    case argument
+    when nil
+      raise ArgumentError.new("Missing argument.")
+    when Integer
+      ansify(type["256"], argument.to_s)
+    when Array
+      raise ArgumentError.new("Invalid RGB color code.") unless argument.length == 3 && argument.all?(Integer)
+      ansify(type["RGB"], *argument)
+    when String, Symbol
+      arg = argument.to_s
+      if BASE_COLORS[arg]
+        ansify(BASE_COLORS[arg] + type["OFFSET"])
       else
-        ansify(ANSI_CODES[arg])
+        raise ArgumentError.new("Unrecognized style: #{arg}")
       end
     else
-      raise ArgumentError.new(INVALID_ARGUMENTS_ERROR.join("\n"))
+      ansify(ANSI_CODES[arg])
     end
   end
 
