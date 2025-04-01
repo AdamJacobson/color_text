@@ -106,13 +106,14 @@ describe String do
       expect{ t.in(:banana) }.to       raise_error(ArgumentError, /banana/)
       expect{ t.in(:bright_flarg) }.to raise_error(ArgumentError, /bright_flarg/)
     end
-    
+
     it 'recognizes other named colors'
     # Test "orange", "brown", "indigo"
 
     it 'raises an error with invalid arguments' do
-      expect{ t.in }.to raise_error(ArgumentError)
-      expect{ t.in(14.8) }.to raise_error(ArgumentError)
+      expect{ t.in }.to        raise_error(ArgumentError)
+      expect{ t.in(false) }.to raise_error(ArgumentError)
+      expect{ t.in(14.8) }.to  raise_error(ArgumentError)
     end
   end
 
@@ -142,13 +143,14 @@ describe String do
     end
 
     it 'raises error for invalid backgrounds' do
-      expect{ t.on(:bold) }.to raise_error(ArgumentError)
+      expect{ t.on(:bold) }.to   raise_error(ArgumentError)
       expect{ t.on(:italic) }.to raise_error(ArgumentError)
     end
 
     it 'raises an error with invalid arguments' do
       expect{ t.on }.to raise_error(ArgumentError)
-      # expect{ t.on(199, 0) }.to raise_error(ArgumentError)
+      expect{ t.on(false) }.to raise_error(ArgumentError)
+      expect{ t.on(199.8) }.to raise_error(ArgumentError)
     end
   end
 

@@ -1,4 +1,15 @@
 class String
+  TEXT_STYLES = {
+    "default" =>       0,
+    "bold" =>          1,
+    "dim" =>           2,
+    "italic" =>        3,
+    "underline" =>     4,
+    "inverse" =>       7,
+    "invisible" =>     8,
+    "strikethrough" => 9,
+  }
+
   BASE_COLORS = {
     "black" =>          30,
     "red" =>            31,
@@ -18,18 +29,7 @@ class String
     "bright_white" =>   97,
   }
 
-  TEXT_STYLES = {
-    "default" =>       0,
-    "bold" =>          1,
-    "dim" =>           2,
-    "italic" =>        3,
-    "underline" =>     4,
-    "inverse" =>       7,
-    "invisible" =>     8,
-    "strikethrough" => 9,
-  }
-
-  ANSI_CODES = {
+  BACKGROUND_COLORS = {
     "on_black" =>          40,
     "on_red" =>            41,
     "on_green" =>          42,
@@ -46,7 +46,9 @@ class String
     "on_bright_magenta" => 105,
     "on_bright_cyan" =>    106,
     "on_bright_white" =>   107,
-  }.merge(TEXT_STYLES).merge(BASE_COLORS)
+  }
+
+  ALL_ANSI_CODES = BACKGROUND_COLORS.merge(TEXT_STYLES).merge(BASE_COLORS)
 
   START_CODE = "\e["
   END_CODE = "\e[0m"
@@ -55,14 +57,14 @@ class String
     "256" => "48;5",
     "RGB" => "48;2",
     "OFFSET" => 10,
-    "VALID_CODES" => [ BASE_COLORS ].reduce({}, :merge),
+    "VALID_CODES" => BASE_COLORS,
   }
 
   FOREGROUND = {
     "256" => "38;5",
     "RGB" => "38;2",
     "OFFSET" => 0,
-    "VALID_CODES" => [ BASE_COLORS, TEXT_STYLES ].reduce({}, :merge),
+    "VALID_CODES" => BASE_COLORS.merge(TEXT_STYLES),
   }
 
   INVALID_ARGUMENTS_ERROR = [
@@ -74,10 +76,12 @@ class String
   ]
 
   def in(*args)
+    raise ArgumentError.new("Missing argument.") if args.length.zero?
     colorize_with_arguments(FOREGROUND, *args)
   end
 
   def on(*args)
+    raise ArgumentError.new("Missing argument.") if args.length.zero?
     colorize_with_arguments(BACKGROUND, *args)
   end
 
@@ -105,7 +109,7 @@ class String
   end
 
   def method_missing(method, *args, &block)
-    code = ANSI_CODES[method.to_s]
+    code = ALL_ANSI_CODES[method.to_s]
     return ansify(code) if code
 
     super
@@ -115,12 +119,7 @@ class String
 
   def colorize_with_arguments(type, *args)
     if args.length > 1
-      result = self
-      args.each do |arg|
-        result = result.send(:colorize_with_argument, type, arg)
-      end
-
-      return result
+      return args.reduce(self) { |sum, arg| sum = sum.colorize_with_argument(type, arg) }
     end
 
     colorize_with_argument(type, args[0])
