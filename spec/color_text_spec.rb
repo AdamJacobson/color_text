@@ -74,9 +74,11 @@ describe String do
       expect(t.in(:red)).to           have_ansi_encoding(t, 31)
       expect(t.in("green")).to        have_ansi_encoding(t, 32)
       expect(t.in(:yellow)).to        have_ansi_encoding(t, 33)
+      expect(t.in("bLUe")).to         have_ansi_encoding(t, 34)
+      expect(t.in(:MaGenTa)).to       have_ansi_encoding(t, 35)
       expect(t.in("cyan")).to         have_ansi_encoding(t, 36)
       expect(t.in(:bright_cyan)).to   have_ansi_encoding(t, 96)
-      expect(t.in("bright_blue")).to  have_ansi_encoding(t, 94)
+      expect(t.in("BRIGHT_BLUE")).to  have_ansi_encoding(t, 94)
     end
 
     it 'can apply styles' do
@@ -161,45 +163,6 @@ describe String do
   describe "#rainbow" do
     it "colorizes each character" do
       expect(t.rainbow).to match(/(\e\[\d{2}m\w{1}\e\[0m)+/)
-    end
-  end
-
-  describe '#text_color' do
-    it 'can colorize a string with an arbitrary color' do
-      expect(t.text_color(99)).to have_ansi_encoding(t, 38, 5, 99)
-    end
-  end
-
-  describe '#bg_color' do
-    it 'can colorize a string with an arbitrary color' do
-      expect(t.bg_color(99)).to have_ansi_encoding(t, 48, 5, 99)
-    end
-  end
-
-  describe '#text_color_rgb' do
-    it 'can colorize a string with an arbirtary RGB code' do
-      expect(t.text_color_rgb(99, 15, 187)).to   have_ansi_encoding(t, 38, 2, 99, 15, 187)
-      expect(t.text_color_rgb(0, 255, 0)).to     have_ansi_encoding(t, 38, 2, 0, 255, 0)
-      expect(t.text_color_rgb(900, 800, 700)).to have_ansi_encoding(t, 38, 2, 900, 800, 700)
-    end
-  end
-
-  describe '#bg_color_rgb' do
-    it 'can colorize a string with an arbirtary RGB code' do
-      expect(t.bg_color_rgb(99, 15, 187)).to   have_ansi_encoding(t, 48, 2, 99, 15, 187)
-      expect(t.bg_color_rgb(0, 255, 0)).to     have_ansi_encoding(t, 48, 2, 0, 255, 0)
-      expect(t.bg_color_rgb(900, 800, 700)).to have_ansi_encoding(t, 48, 2, 900, 800, 700)
-    end
-
-    it 'can be chained' do
-      expect(t.bg_color_rgb(99, 15, 187).bold).to have_ansi_encoding(t, 48, 2, 99, 15, 187, 1)
-    end
-  end
-
-  describe 'combining effects' do
-    it 'combines code additively' do
-      string = t.text_color(99).bg_color(127)
-      expect(string).to have_ansi_encoding(t, 38, 5, 99, 48, 5, 127)
     end
   end
 end

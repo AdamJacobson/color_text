@@ -54,53 +54,39 @@ class String
   END_CODE = "\e[0m"
 
   BACKGROUND = {
-    "256" => "48;5",
-    "RGB" => "48;2",
+    "256_PREFIX" => "48;5",
+    "RGB_PREFIX" => "48;2",
     "OFFSET" => 10,
     "VALID_CODES" => BASE_COLORS,
   }
 
   FOREGROUND = {
-    "256" => "38;5",
-    "RGB" => "38;2",
+    "256_PREFIX" => "38;5",
+    "RGB_PREFIX" => "38;2",
     "OFFSET" => 0,
     "VALID_CODES" => BASE_COLORS.merge(TEXT_STYLES),
   }
 
-  INVALID_ARGUMENTS_ERROR = [
-    "Invalid Arguments",
-    "Must be one of the following:",
-    "\t- Array of 3 integers, 0 to 255, denoting Red, Green and Blue values",
-    "\t- Integer, 0 to 255",
-    "\t- One color name as a string or symbol",
-  ]
-
   def in(*args)
-    raise ArgumentError.new("Missing argument.") if args.length.zero?
-    colorize_with_arguments(FOREGROUND, *args)
+    case args.length
+    when 0
+      raise ArgumentError.new("Missing argument.")
+    when 1
+      colorize_with_argument(FOREGROUND, args[0])
+    else
+      args.reduce(self) { |combined, arg| combined = combined.in(arg) }
+    end
   end
 
   def on(*args)
-    raise ArgumentError.new("Missing argument.") if args.length.zero?
-    colorize_with_arguments(BACKGROUND, *args)
-  end
-
-  def text_color_rgb(red, green, blue)
-    ansify(FOREGROUND["RGB"], red, green, blue)
-  end
-
-  def bg_color_rgb(red, green, blue)
-    ansify(BACKGROUND["RGB"], red, green, blue)
-  end
-
-  # Set background to an arbitrary color defined by a number of 0 to 255
-  def bg_color(color_code)
-    ansify(BACKGROUND["256"], color_code.to_s)
-  end
-
-  # Set text to an arbitrary color defined by a number of 0 to 255
-  def text_color(color_code)
-    ansify(FOREGROUND["256"], color_code.to_s)
+    case args.length
+    when 0
+      raise ArgumentError.new("Missing argument.")
+    when 1
+      colorize_with_argument(BACKGROUND, args[0])
+    else
+      args.reduce(self) { |combined, arg| combined = combined.on(arg) }
+    end
   end
 
   def rainbow
@@ -109,7 +95,7 @@ class String
   end
 
   def method_missing(method, *args, &block)
-    code = ALL_ANSI_CODES[method.to_s]
+    code = ALL_ANSI_CODES[method.to_s.downcase]
     return ansify(code) if code
 
     super
@@ -117,25 +103,17 @@ class String
 
   private
 
-  def colorize_with_arguments(type, *args)
-    if args.length > 1
-      return args.reduce(self) { |sum, arg| sum = sum.colorize_with_argument(type, arg) }
-    end
-
-    colorize_with_argument(type, args[0])
-  end
-
   def colorize_with_argument(type, argument)
     case argument
     when nil
       raise ArgumentError.new("Missing argument.")
     when Integer
-      ansify(type["256"], argument.to_s)
+      ansify(type["256_PREFIX"], argument.to_s)
     when Array
       raise ArgumentError.new("Invalid RGB color code: '#{argument.join(", ")}'") unless argument.length == 3 && argument.all?(Integer)
-      ansify(type["RGB"], *argument)
+      ansify(type["RGB_PREFIX"], *argument)
     when String, Symbol
-      style = type["VALID_CODES"][argument.to_s]
+      style = type["VALID_CODES"][argument.to_s.downcase]
       if style
         ansify((style) + type["OFFSET"])
       else
