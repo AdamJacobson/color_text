@@ -70,18 +70,18 @@ class String
   def in(*args)
     case args.length
     when 0
-      raise ArgumentError.new("Missing argument.")
+      raise ArgumentError.new("Requires at least one argument.")
     when 1
       colorize_with_argument(FOREGROUND, args[0])
     else
       args.reduce(self) { |combined, arg| combined = combined.in(arg) }
     end
   end
-
+  
   def on(*args)
     case args.length
     when 0
-      raise ArgumentError.new("Missing argument.")
+      raise ArgumentError.new("Requires at least one argument.")
     when 1
       colorize_with_argument(BACKGROUND, args[0])
     else
@@ -133,7 +133,7 @@ class String
     match = self.match(ENCODED_STRING_PATTERN)
     if match
       index = match[0].length
-      self.insert(index, ";#{code.to_s}")
+      self[0...index] + ";#{code.to_s}" + self[index..-1]
     else
       "#{START_CODE}#{code.to_s}m#{self}#{END_CODE}"
     end

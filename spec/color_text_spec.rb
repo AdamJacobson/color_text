@@ -69,6 +69,23 @@ describe String do
     expect(t.underline).to have_ansi_encoding(t, 4)
   end
 
+  it "doesn't alter the original string" do
+    x = "X"
+    x.red
+    expect(x).to eq("X")
+
+    red = "X".red
+    red.blue
+    expect(red).to eq("X".red)
+  end
+
+  it 'works for combined styles strings' do
+    x = "x".red
+    y = "y".blue
+    combined = (x + y)
+    expect(combined.bold).to eq(x.bold + y.bold)
+  end
+
   describe '#in' do
     it 'can colorize a string with a named color as symbol or string' do
       expect(t.in(:red)).to           have_ansi_encoding(t, 31)
