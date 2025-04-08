@@ -89,9 +89,9 @@ class String
     end
   end
 
-  def rainbow
+  def rainbow(delimiter = "")
     colors = %i[ red green yellow blue magenta cyan ]
-    self.chars.map.with_index { |char, i| char.send(colors[i % colors.length]) }.join
+    self.split(delimiter).map.with_index { |char, i| char.send(colors[i % colors.length]) }.join(delimiter)
   end
 
   def method_missing(method, *args, &block)

@@ -181,6 +181,14 @@ describe String do
     it "colorizes each character" do
       expect(t.rainbow).to match(/(\e\[\d{2}m\w{1}\e\[0m)+/)
     end
+
+    it "colorizes each word" do
+      input = %w[LOREM IPSUM DOLOR]
+      result = input.join(" ").rainbow(" ").split(" ")
+      expect(result[0]).to match(/\e\[\d{2}m#{input[0]}\e\[0m/)
+      expect(result[1]).to match(/\e\[\d{2}m#{input[1]}\e\[0m/)
+      expect(result[2]).to match(/\e\[\d{2}m#{input[2]}\e\[0m/)
+    end
   end
 
   describe "helper methods" do
