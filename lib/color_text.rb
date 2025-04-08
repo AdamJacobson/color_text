@@ -101,6 +101,25 @@ class String
     super
   end
 
+  def self.color_table
+    puts (0..7).to_a.map { |i| "  #{i} ".on(i) }.join
+    puts (8..15).to_a.map { |i| "  #{i} ".on(i) }.join
+
+    (16..231).each_slice(30) do |slice|
+      # puts slice.map { |i| "  #{i} ".on(i) }.join
+      puts slice.map { |i| (i.to_s.pad_to(5) + " ").on(i) }.join
+    end
+
+    print "\n"
+    nil
+  end
+
+  def pad_to(length)
+    remaining = length - self.length
+    return self if remaining < 1
+    " " * remaining + self
+  end
+
   private
 
   def ansi_code_indices
