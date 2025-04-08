@@ -77,7 +77,7 @@ class String
       args.reduce(self) { |combined, arg| combined = combined.in(arg) }
     end
   end
-  
+
   def on(*args)
     case args.length
     when 0
@@ -102,6 +102,20 @@ class String
   end
 
   private
+
+  def ansi_code_indices
+    matches = self.to_enum(:scan, /\e\[(?:\d+)(?:;\d+)*m/).map { Regexp.last_match }
+    codes = matches.select { |md| md[0] != END_CODE }
+    codes.map { |code| code.begin(0) + code[0].length - 1 }
+  end
+
+  def append_to_existing_ansi_codes(code)
+    modified = self
+    ansi_code_indices.reverse.each do |index|
+      modified = modified[0...index] + ";#{code}" + modified[index..-1]
+    end
+    modified
+  end
 
   def colorize_with_argument(type, argument)
     case argument
@@ -130,10 +144,8 @@ class String
   def ansify(*codes)
     code = codes.join(";")
 
-    match = self.match(ENCODED_STRING_PATTERN)
-    if match
-      index = match[0].length
-      self[0...index] + ";#{code.to_s}" + self[index..-1]
+    if self.match(ENCODED_STRING_PATTERN)
+      append_to_existing_ansi_codes(code.to_s)
     else
       "#{START_CODE}#{code.to_s}m#{self}#{END_CODE}"
     end

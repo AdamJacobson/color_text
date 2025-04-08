@@ -79,11 +79,11 @@ describe String do
     expect(red).to eq("X".red)
   end
 
-  it 'works for combined styles strings' do
-    x = "x".red
-    y = "y".blue
-    combined = (x + y)
-    expect(combined.bold).to eq(x.bold + y.bold)
+  it 'inteligently adds codes to existing ones when there are more than one' do
+    x = "X".red
+    y = "Y".blue
+
+    expect((x + y).bold).to eq(x.bold + y.bold)
   end
 
   describe '#in' do
@@ -180,6 +180,28 @@ describe String do
   describe "#rainbow" do
     it "colorizes each character" do
       expect(t.rainbow).to match(/(\e\[\d{2}m\w{1}\e\[0m)+/)
+    end
+  end
+
+  describe "helper methods" do
+    describe "ansi_code_indices" do
+      it "returns the ending indicies of all starting codes" do
+        expect("R".red.send(:ansi_code_indices)).to eq([4])
+        expect(("R".red + "B".blue).send(:ansi_code_indices)).to eq([4, 14])
+        expect("IDKLOL".send(:ansi_code_indices)).to eq([])
+      end
+    end
+
+    describe "append_to_existing_ansi_codes" do
+      it "modifies all existing codes" do
+        ex = "RED".red + "BLUE".blue
+        expect(ex.send(:append_to_existing_ansi_codes, "99")).to eq("\e[31;99mRED\e[0m\e[34;99mBLUE\e[0m")
+      end
+
+      it "changes nothing if no indicies" do
+        ex = "RED"
+        expect(ex.send(:append_to_existing_ansi_codes, "99")).to eq(ex)
+      end
     end
   end
 end
