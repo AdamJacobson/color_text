@@ -86,6 +86,11 @@ describe String do
     expect((x + y).bold).to eq(x.bold + y.bold)
   end
 
+  it "handles very complex cases" # do
+  #   base = ("YELLOW" + "RED".red + "BLUE".blue).yellow
+  #   expect(base).to eq("\e[33mYELLOW\e[31;33mRED\e[0m\e[34;33mBLUE\e[0m\e[0m")
+  # end
+
   describe '#in' do
     it 'can colorize a string with a named color as symbol or string' do
       expect(t.in(:red)).to           have_ansi_encoding(t, 31)

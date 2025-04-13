@@ -102,16 +102,44 @@ class String
   end
 
   def self.color_table
-    puts (0..7).to_a.map { |i| "  #{i} ".on(i) }.join
-    puts (8..15).to_a.map { |i| "  #{i} ".on(i) }.join
+    padded_string = proc { |n| n.to_s.pad_to(5) + " " }
 
-    (16..231).each_slice(30) do |slice|
-      # puts slice.map { |i| "  #{i} ".on(i) }.join
-      puts slice.map { |i| (i.to_s.pad_to(5) + " ").on(i) }.join
+    puts (0..7).to_a.map { |i| padded_string[i].on(i) }.join
+    puts (8..15).to_a.map { |i| padded_string[i].on(i).in(0) }.join
+
+    puts "\n"
+
+    starts = [
+      16, 52, 88, 124, 160, 196,
+      22, 58, 94, 130, 166, 202,
+      28, 64, 100, 136, 172, 208
+    ]
+
+    starts.each.with_index do |s, row|
+      x = s
+      
+      6.times do
+        print padded_string[x].on(x)
+        x += 1
+      end
+
+      print "   "
+      
+      x += 12
+      
+      6.times do
+        print padded_string[x].on(x).in(0)
+        x += 1
+      end
+
+      puts "\n"
+      puts "\n" if (row + 1) % 6 == 0
     end
 
+    puts (232..243).to_a.map { |i| padded_string[i].on(i) }.join
+    puts (244..255).to_a.map { |i| padded_string[i].on(i).in(0) }.join
+
     print "\n"
-    nil
   end
 
   def pad_to(length)
