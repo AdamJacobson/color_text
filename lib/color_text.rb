@@ -117,16 +117,16 @@ class String
 
     starts.each.with_index do |s, row|
       x = s
-      
+
       6.times do
         print padded_string[x].on(x)
         x += 1
       end
 
       print "   "
-      
+
       x += 12
-      
+
       6.times do
         print padded_string[x].on(x).in(0)
         x += 1
@@ -174,6 +174,9 @@ class String
       raise ArgumentError.new("Invalid RGB color code: '#{argument.join(", ")}'") unless argument.length == 3 && argument.all?(Integer)
       ansify(type["RGB_PREFIX"], *argument)
     when String, Symbol
+      from_hex = rgb_255_from_hexidecimal(argument.to_s.downcase)
+      return ansify(type["RGB_PREFIX"], *from_hex) if from_hex
+
       style = type["VALID_CODES"][argument.to_s.downcase]
       if style
         ansify((style) + type["OFFSET"])
@@ -182,6 +185,20 @@ class String
       end
     else
       raise ArgumentError.new("Invalid argument: '#{argument}'")
+    end
+  end
+
+  def rgb_255_from_hexidecimal(hex)
+    match = hex.match(/^#([a-zA-Z0-9]{6})$/)
+    if match
+      nums = match[1]
+      [
+        nums[0..1].to_i(16),
+        nums[2..3].to_i(16),
+        nums[4..5].to_i(16),
+      ]
+    else
+      nil
     end
   end
 

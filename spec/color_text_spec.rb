@@ -134,6 +134,10 @@ describe String do
     it 'recognizes other named colors'
     # Test "orange", "brown", "indigo"
 
+    it 'accepts hex colors' do
+      expect(t.in("#F29C0A")).to have_ansi_encoding(t, 38, 2, 242, 156, 10)
+    end
+
     it 'raises an error with invalid arguments' do
       expect{ t.in }.to        raise_error(ArgumentError)
       expect{ t.in(false) }.to raise_error(ArgumentError)
@@ -159,6 +163,10 @@ describe String do
       expect(t.on("cyan")).to         have_ansi_encoding(t, 46)
       expect(t.on(:bright_cyan)).to   have_ansi_encoding(t, 106)
       expect(t.on("bright_blue")).to  have_ansi_encoding(t, 104)
+    end
+
+    it 'accepts hex colors' do
+      expect(t.on("#F20CAA")).to have_ansi_encoding(t, 48, 2, 242, 12, 170)
     end
 
     it 'raises error for unrecognized colors' do
