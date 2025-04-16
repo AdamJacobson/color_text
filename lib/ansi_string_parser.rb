@@ -1,3 +1,5 @@
+# Used to parse strings with ANSI codes into a format that is easier to modify.
+# Used internally by ColorText. Not required for end user.
 class AnsiStringParser
   def initialize(source)
     @source = source
@@ -9,63 +11,46 @@ class AnsiStringParser
 
   private
 
+  #
   def tokenize
     tokens = []
     current_token = nil
+    skip_until_after = -1
 
-    puts "tokenizing: #{@source.inspect}"
+    @source.chars.each_with_index do |char, i|
+      next if i <= skip_until_after
 
-    i = 0
-    while i < @source.length
-      puts "i: #{i}"
-      char = @source[i]
-      if char == "\e" && @source[i + 1] == "["
+      case char
+      when "\e"
         if current_token
-          tokens += [current_token] 
+          tokens += [current_token]
           current_token = nil
         end
-        puts "\tFound code start"
-        codes, i = extract_codes_at(i)
+        codes, skip_until_after = extract_codes_at(i)
         tokens += [codes]
-        p tokens
       else
         current_token ||= ""
         current_token += char
-        puts "other char: #{char}"
-        i += 1
       end
     end
 
     tokens += [current_token] if current_token
-
     tokens
   end
 
-  # Get the code starting at the given index. Returns the index after the code ends.
+  # Get the numeric codes starting at the given index.
+  # Returns codes as an Array of Integers along with the ending index of the sequence
   def extract_codes_at(code_start)
-    codes = []
-    current_code = ""
+    substring = @source[code_start..-1]
 
-    puts "extract_codes_at(#{code_start})"
-    i = code_start
-    char = @source[i]
-    while char != "m"
-      puts "extract_codes_at: #{char.inspect}"
-      case char
-      when ";"
-        codes += [current_code.to_i]
-        current_code = ""
-      when /\d/
-        current_code += char
-      end
+    match = substring.match(/^\e\[(?<numbers>[^m]*)/)
+    if match
+      numbers = match.named_captures["numbers"].split(";").map(&:to_i)
+      end_index = code_start + match[0].length
 
-      i += 1
-      char = @source[i]
+      return [numbers, end_index]
+    else
+      raise "invalid code sequence at start of substring \"#{substring}\""
     end
-
-    codes += [current_code.to_i] if current_code
-
-    puts "returning: [#{codes}, #{i + 1}]"
-    [codes, i + 1]
   end
 end
