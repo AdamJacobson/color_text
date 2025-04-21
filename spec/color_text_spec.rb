@@ -96,6 +96,13 @@ describe String do
   #   expect(base).to eq("\e[33mYELLOW\e[31;33mRED\e[0m\e[34;33mBLUE\e[0m\e[0m")
   # end
 
+  it 'recognizes other named colors as foreground or background' do
+    expect(t.gold).to       have_ansi_encoding(t, 38, 2, 255, 215, 0)
+    expect(t.crimson).to    have_ansi_encoding(t, 38, 2, 220, 20, 60)
+    expect(t.on_gold).to    have_ansi_encoding(t, 48, 2, 255, 215, 0)
+    expect(t.on_crimson).to have_ansi_encoding(t, 48, 2, 220, 20, 60)
+  end
+
   describe '#in' do
     it 'can colorize a string with a named color as symbol or string' do
       expect(t.in(:red)).to           have_ansi_encoding(t, 31)
@@ -136,9 +143,6 @@ describe String do
       expect{ t.in(:bright_flarg) }.to raise_error(ArgumentError, /bright_flarg/)
     end
 
-    it 'recognizes other named colors'
-    # Test "orange", "brown", "indigo"
-
     context 'define_color' do
       it 'can be defined as 256 color'
       it 'can be defined as a hex color'
@@ -152,15 +156,10 @@ describe String do
 
     context 'other named colors' do
       it 'are recognized as string or symbol regardless of case' do
-        # expect(t.in(:orange)).to  have_ansi_encoding(t, 38, 2, 255, 165, 0)
-        # expect(t.in("ORANGE")).to have_ansi_encoding(t, 38, 2, 255, 165, 0)
-        # expect(t.in(:brown)).to   have_ansi_encoding(t, 38, 2, 165, 42, 42)
-        # expect(t.in(:INDIGO)).to  have_ansi_encoding(t, 38, 2, 75, 0, 130)
-      end
-
-      it 'are recognized as method names' do
-        # expect(t.gold).to have_ansi_encoding(t, 38, 2, 255, 215, 0)
-        # expect(t.crimson).to have_ansi_encoding(t, 38, 2, 220, 20, 60)
+        expect(t.in("orange")).to have_ansi_encoding(t, 38, 2, 255, 165, 0)
+        expect(t.in("oRaNgE")).to have_ansi_encoding(t, 38, 2, 255, 165, 0)
+        expect(t.in(:orange)).to  have_ansi_encoding(t, 38, 2, 255, 165, 0)
+        expect(t.in(:orAnGe)).to  have_ansi_encoding(t, 38, 2, 255, 165, 0)
       end
     end
 
@@ -169,9 +168,10 @@ describe String do
     end
 
     it 'raises an error with invalid arguments' do
-      expect{ t.in }.to        raise_error(ArgumentError)
-      expect{ t.in(false) }.to raise_error(ArgumentError)
-      expect{ t.in(14.8) }.to  raise_error(ArgumentError)
+      expect{ t.in }.to            raise_error(ArgumentError)
+      expect{ t.in(false) }.to     raise_error(ArgumentError)
+      expect{ t.in(14.8) }.to      raise_error(ArgumentError)
+      expect{ t.in("F29C0A") }.to  raise_error(ArgumentError)
     end
   end
 
@@ -193,6 +193,15 @@ describe String do
       expect(t.on("cyan")).to         have_ansi_encoding(t, 46)
       expect(t.on(:bright_cyan)).to   have_ansi_encoding(t, 106)
       expect(t.on("bright_blue")).to  have_ansi_encoding(t, 104)
+    end
+
+    context 'other named colors' do
+      it 'are recognized as string or symbol regardless of case' do
+        expect(t.on("forestgreen")).to have_ansi_encoding(t, 48, 2, 34, 139, 34)
+        expect(t.on("foReSTgrEEn")).to have_ansi_encoding(t, 48, 2, 34, 139, 34)
+        expect(t.on(:forestgreen)).to  have_ansi_encoding(t, 48, 2, 34, 139, 34)
+        expect(t.on(:fOREstgREen)).to  have_ansi_encoding(t, 48, 2, 34, 139, 34)
+      end
     end
 
     it 'accepts hex colors' do
@@ -231,6 +240,32 @@ describe String do
       expect(result[0]).to match(/\e\[\d{2}m#{input[0]}\e\[0m/)
       expect(result[1]).to match(/\e\[\d{2}m#{input[1]}\e\[0m/)
       expect(result[2]).to match(/\e\[\d{2}m#{input[2]}\e\[0m/)
+    end
+  end
+
+  describe "String#define_color" do
+    it 'allows user to define custom colors' do
+      String.define_color("wumbo", [19, 56, 200])
+      expect(t.in(:wumbo)).to have_ansi_encoding(t, 38, 2, 19, 56, 200)
+      expect(t.wumbo).to      have_ansi_encoding(t, 38, 2, 19, 56, 200)
+
+      expect(t.on(:wumbo)).to have_ansi_encoding(t, 48, 2, 19, 56, 200)
+      expect(t.on_wumbo).to   have_ansi_encoding(t, 48, 2, 19, 56, 200)
+    end
+
+    it 'can define colors as hexidecimal' do
+      String.define_color(:hex, "#90ee90")
+      expect(t.in("hex")).to have_ansi_encoding(t, 38, 2, 144, 238, 144)
+      expect(t.hex).to       have_ansi_encoding(t, 38, 2, 144, 238, 144)
+
+      expect(t.on("hex")).to have_ansi_encoding(t, 48, 2, 144, 238, 144)
+      expect(t.on_hex).to    have_ansi_encoding(t, 48, 2, 144, 238, 144)
+    end
+  end
+
+  describe "String#color_table" do
+    it "returns a table" do
+      expect(String.color_table).to be_nil
     end
   end
 
