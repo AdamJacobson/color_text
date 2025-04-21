@@ -1,5 +1,5 @@
 require 'rspec'
-require 'color_text'
+require 'core_extensions/string/hueby.rb'
 
 def expect_codes(*codes)
   combined_codes = codes.map(&:to_s).join(";")
@@ -17,7 +17,12 @@ RSpec::Matchers.define(:have_ansi_encoding) do |text, *expected_codes|
   end
 end
 
+
 describe String do
+  before do
+    String.include CoreExtensions::String::Hueby
+  end
+
   let(:t) { "TEXT" }
 
   it 'applies basic colors to text' do
@@ -133,6 +138,31 @@ describe String do
 
     it 'recognizes other named colors'
     # Test "orange", "brown", "indigo"
+
+    context 'define_color' do
+      it 'can be defined as 256 color'
+      it 'can be defined as a hex color'
+      it 'can be defined as a single digit color'
+      it 'can be defined as multiple styles'
+    end
+
+    context 'define_style' do
+      it 'can define a list of styles'
+    end
+
+    context 'other named colors' do
+      it 'are recognized as string or symbol regardless of case' do
+        # expect(t.in(:orange)).to  have_ansi_encoding(t, 38, 2, 255, 165, 0)
+        # expect(t.in("ORANGE")).to have_ansi_encoding(t, 38, 2, 255, 165, 0)
+        # expect(t.in(:brown)).to   have_ansi_encoding(t, 38, 2, 165, 42, 42)
+        # expect(t.in(:INDIGO)).to  have_ansi_encoding(t, 38, 2, 75, 0, 130)
+      end
+
+      it 'are recognized as method names' do
+        # expect(t.gold).to have_ansi_encoding(t, 38, 2, 255, 215, 0)
+        # expect(t.crimson).to have_ansi_encoding(t, 38, 2, 220, 20, 60)
+      end
+    end
 
     it 'accepts hex colors' do
       expect(t.in("#F29C0A")).to have_ansi_encoding(t, 38, 2, 242, 156, 10)
