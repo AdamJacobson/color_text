@@ -17,12 +17,9 @@ RSpec::Matchers.define(:have_ansi_encoding) do |text, *expected_codes|
   end
 end
 
+String.include CoreExtensions::String::Hueby
 
 describe String do
-  before do
-    String.include CoreExtensions::String::Hueby
-  end
-
   let(:t) { "TEXT" }
 
   it 'applies basic colors to text' do
@@ -143,17 +140,6 @@ describe String do
       expect{ t.in(:bright_flarg) }.to raise_error(ArgumentError, /bright_flarg/)
     end
 
-    context 'define_color' do
-      it 'can be defined as 256 color'
-      it 'can be defined as a hex color'
-      it 'can be defined as a single digit color'
-      it 'can be defined as multiple styles'
-    end
-
-    context 'define_style' do
-      it 'can define a list of styles'
-    end
-
     context 'other named colors' do
       it 'are recognized as string or symbol regardless of case' do
         expect(t.in("orange")).to have_ansi_encoding(t, 38, 2, 255, 165, 0)
@@ -244,28 +230,33 @@ describe String do
   end
 
   describe "String#define_color" do
-    it 'allows user to define custom colors' do
+    it 'can be defined as 256 color' do
       String.define_color("wumbo", [19, 56, 200])
       expect(t.in(:wumbo)).to have_ansi_encoding(t, 38, 2, 19, 56, 200)
       expect(t.wumbo).to      have_ansi_encoding(t, 38, 2, 19, 56, 200)
 
-      expect(t.on(:wumbo)).to have_ansi_encoding(t, 48, 2, 19, 56, 200)
+      expect(t.on("wumbo")).to have_ansi_encoding(t, 48, 2, 19, 56, 200)
       expect(t.on_wumbo).to   have_ansi_encoding(t, 48, 2, 19, 56, 200)
     end
 
     it 'can define colors as hexidecimal' do
-      String.define_color(:hex, "#90ee90")
-      expect(t.in("hex")).to have_ansi_encoding(t, 38, 2, 144, 238, 144)
-      expect(t.hex).to       have_ansi_encoding(t, 38, 2, 144, 238, 144)
+      String.define_color(:hexi, "#90ee90")
+      expect(t.in("hexi")).to have_ansi_encoding(t, 38, 2, 144, 238, 144)
+      expect(t.hexi).to       have_ansi_encoding(t, 38, 2, 144, 238, 144)
 
-      expect(t.on("hex")).to have_ansi_encoding(t, 48, 2, 144, 238, 144)
-      expect(t.on_hex).to    have_ansi_encoding(t, 48, 2, 144, 238, 144)
+      expect(t.on(:hexi)).to have_ansi_encoding(t, 48, 2, 144, 238, 144)
+      expect(t.on_hexi).to    have_ansi_encoding(t, 48, 2, 144, 238, 144)
     end
-  end
 
-  describe "String#color_table" do
-    it "returns a table" do
-      expect(String.color_table).to be_nil
+    it 'can be defined as a single digit color' do
+      String.define_color(:ninety_nine, 99)
+      expect(t.in("ninety_nine")).to have_ansi_encoding(t, 38, 5, 99)
+      expect(t.on(:ninety_nine)).to have_ansi_encoding(t, 48, 5, 99)
+    end
+
+    it 'raises error if already defined' do
+      String.define_color("existing", 100)
+      expect{ String.define_color("existing", 100) }.to raise_error(StandardError, /cannot define.*existing/i)
     end
   end
 

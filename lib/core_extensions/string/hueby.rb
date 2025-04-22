@@ -78,7 +78,7 @@ module CoreExtensions
           define_method(name) do
             self.in(color)
           end
-          
+
           define_method("on_#{name}") do
             self.on(color)
           end
@@ -112,15 +112,8 @@ module CoreExtensions
         end
       end
 
-      def on(*args)
-        case args.length
-        when 0
-          raise ArgumentError.new("Requires at least one argument.")
-        when 1
-          colorize_with_argument(BACKGROUND, args[0])
-        else
-          args.reduce(self) { |combined, arg| combined = combined.on(arg) }
-        end
+      def on(style)
+        colorize_with_argument(BACKGROUND, style)
       end
 
       def rainbow(delimiter = "")
@@ -136,6 +129,10 @@ module CoreExtensions
 
       module ClassMethods
         def define_color(name, color)
+          if "".respond_to?(name)
+            raise ArgumentError.new("Cannot define color \"#{name}\". There is already a method with that name.")
+          end
+
           CoreExtensions::String::Hueby::NAMED_COLORS[name.to_s.downcase] = color
           define_method(name) do
             self.in(color)
