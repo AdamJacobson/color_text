@@ -1,11 +1,5 @@
 require 'rspec'
-require 'core_extensions/string/hueby.rb'
-
-def expect_codes(*codes)
-  combined_codes = codes.map(&:to_s).join(";")
-  expected = ["\e[", combined_codes, "m", text, "\e[0m"].join
-  expect(yield).to eq(expected)
-end
+require 'hueby'
 
 RSpec::Matchers.define(:have_ansi_encoding) do |text, *expected_codes|
   combined_codes = expected_codes.map(&:to_s).join(";")
@@ -18,6 +12,63 @@ RSpec::Matchers.define(:have_ansi_encoding) do |text, *expected_codes|
 end
 
 String.include CoreExtensions::String::Hueby
+
+describe "Hueby" do
+  let(:t) { "TEXT" }
+
+  it 'can define custom colors' do
+    Hueby.define_color("new_color", "#FF00AA")
+    expect(t.in("new_color")).to have_ansi_encoding(t, 38, 2, 255, 0, 170)
+    expect(t.on(:new_color)).to  have_ansi_encoding(t, 48, 2, 255, 0, 170)
+    expect(t).not_to respond_to(:new_color)
+  end
+
+  it 'can define custom colors as a method' do
+    methods = Hueby.define_color("new_color", [255, 0, 170], create_method: true)
+    expect(methods).to eq([:new_color, :on_new_color])
+
+    expect(t.new_color).to    have_ansi_encoding(t, 38, 2, 255, 0, 170)
+    expect(t.on_new_color).to have_ansi_encoding(t, 48, 2, 255, 0, 170)
+  end
+
+  it 'can override custom colors' do
+    methods = Hueby.define_color("new_color", [255, 0, 170], create_method: true)
+    expect(t.new_color).to have_ansi_encoding(t, 38, 2, 255, 0, 170)
+    expect(methods).to eq([:new_color, :on_new_color])
+    
+    Hueby.define_color("new_color", [0, 0, 55], create_method: true)
+    expect(t.new_color).to have_ansi_encoding(t, 38, 2, 0, 0, 55)
+    expect(methods).to eq([:new_color, :on_new_color])
+  end
+
+  describe 'safe_to_define_color_methods?' do
+    it 'returns true if neither method defined' do
+      expect(Hueby.safe_to_define_color_methods?("sworple")).to be_truthy
+    end
+
+    context 'if either method is defined' do
+      it 'returns false' do
+        String.define_method("sworple") do; nil; end
+        expect(Hueby.safe_to_define_color_methods?("sworple")).to be_falsy
+      end
+
+      it 'returns false' do
+        String.define_method("on_sworple") do; nil; end
+        expect(Hueby.safe_to_define_color_methods?("sworple")).to be_falsy
+      end
+
+      context 'and the named color is registered in NAMED_COLORS' do
+        it 'returns true' do
+          String.define_method("sworple") do; nil; end
+          String.define_method("on_sworple") do; nil; end
+          CoreExtensions::String::Hueby::NAMED_COLORS["sworple"] = 99
+
+          expect(Hueby.safe_to_define_color_methods?("sworple")).to be_truthy
+        end
+      end
+    end
+  end
+end
 
 describe String do
   let(:t) { "TEXT" }
@@ -229,34 +280,39 @@ describe String do
     end
   end
 
-  describe "String#define_color" do
+  describe "Hueby#define_color" do
     it 'can be defined as 256 color' do
-      String.define_color("wumbo", [19, 56, 200])
+      Hueby.define_color("wumbo", [19, 56, 200], create_method: true)
       expect(t.in(:wumbo)).to have_ansi_encoding(t, 38, 2, 19, 56, 200)
       expect(t.wumbo).to      have_ansi_encoding(t, 38, 2, 19, 56, 200)
 
       expect(t.on("wumbo")).to have_ansi_encoding(t, 48, 2, 19, 56, 200)
-      expect(t.on_wumbo).to   have_ansi_encoding(t, 48, 2, 19, 56, 200)
+      expect(t.on_wumbo).to    have_ansi_encoding(t, 48, 2, 19, 56, 200)
     end
 
     it 'can define colors as hexidecimal' do
-      String.define_color(:hexi, "#90ee90")
+      Hueby.define_color(:hexi, "#90ee90", create_method: true)
       expect(t.in("hexi")).to have_ansi_encoding(t, 38, 2, 144, 238, 144)
       expect(t.hexi).to       have_ansi_encoding(t, 38, 2, 144, 238, 144)
 
       expect(t.on(:hexi)).to have_ansi_encoding(t, 48, 2, 144, 238, 144)
-      expect(t.on_hexi).to    have_ansi_encoding(t, 48, 2, 144, 238, 144)
+      expect(t.on_hexi).to   have_ansi_encoding(t, 48, 2, 144, 238, 144)
     end
 
     it 'can be defined as a single digit color' do
-      String.define_color(:ninety_nine, 99)
+      Hueby.define_color(:ninety_nine, 99, create_method: true)
       expect(t.in("ninety_nine")).to have_ansi_encoding(t, 38, 5, 99)
       expect(t.on(:ninety_nine)).to have_ansi_encoding(t, 48, 5, 99)
     end
 
-    it 'raises error if already defined' do
-      String.define_color("existing", 100)
-      expect{ String.define_color("existing", 100) }.to raise_error(StandardError, /cannot define.*existing/i)
+    it 'can overwrite existing named colors with new values' do
+      Hueby.define_color("idk", 100, create_method: true)
+      Hueby.define_color("idk", 200, create_method: true)
+      expect(t.idk).to have_ansi_encoding(t, 38, 5, 200)
+    end
+
+    it 'raises error when creating color method would overwrite an existing method' do
+      expect{ Hueby.define_color("split", 100, create_method: true) }.to raise_error(StandardError, /cannot define.*split/i)
     end
   end
 

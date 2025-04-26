@@ -263,5 +263,3 @@ module CoreExtensions
     end
   end
 end
-
-
