@@ -1,9 +1,9 @@
-require_relative './named_colors'
+require 'csv'
 
 module CoreExtensions
   module String
     module Hueby
-      include NamedColors
+      NAMED_COLORS = {}
 
       TEXT_STYLES = {
         "default" =>       0,
@@ -72,17 +72,9 @@ module CoreExtensions
       }
 
       def self.included(base)
-        base.extend(ClassMethods)
-
-        NAMED_COLORS.each do |name, color|
-          define_method(name) do
-            self.in(color)
-          end
-
-          define_method("on_#{name}") do
-            self.on(color)
-          end
-        end
+        csv_data = File.readlines("lib/named_colors.csv")
+        parsed = CSV.parse(csv_data.join, headers: true)
+        parsed.each { |row| ::Hueby.define_color(row["color_name"], row["hex_code"], create_methods: true) }
 
         TEXT_STYLES.each do |style, _|
           define_method(style) do
@@ -125,64 +117,6 @@ module CoreExtensions
         remaining = length - self.length
         return self if remaining < 1
         " " * remaining + self
-      end
-
-      module ClassMethods
-        def define_color(name, color)
-          if "".respond_to?(name)
-            raise ArgumentError.new("Cannot define color \"#{name}\". There is already a method with that name.")
-          end
-
-          CoreExtensions::String::Hueby::NAMED_COLORS[name.to_s.downcase] = color
-          define_method(name) do
-            self.in(color)
-          end
-
-          define_method("on_#{name}") do
-            self.on(color)
-          end
-        end
-
-        def color_table
-          padded_string = proc { |n| n.to_s.pad_to(5) + " " }
-
-          puts (0..7).to_a.map { |i| padded_string[i].on(i) }.join
-          puts (8..15).to_a.map { |i| padded_string[i].on(i).in(0) }.join
-
-          puts "\n"
-
-          starts = [
-            16, 52, 88, 124, 160, 196,
-            22, 58, 94, 130, 166, 202,
-            28, 64, 100, 136, 172, 208
-          ]
-
-          starts.each.with_index do |s, row|
-            x = s
-
-            6.times do
-              print padded_string[x].on(x)
-              x += 1
-            end
-
-            print "   "
-
-            x += 12
-
-            6.times do
-              print padded_string[x].on(x).in(0)
-              x += 1
-            end
-
-            puts "\n"
-            puts "\n" if (row + 1) % 6 == 0
-          end
-
-          puts (232..243).to_a.map { |i| padded_string[i].on(i) }.join
-          puts (244..255).to_a.map { |i| padded_string[i].on(i).in(0) }.join
-
-          print "\n"
-        end
       end
 
       private
