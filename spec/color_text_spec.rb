@@ -16,6 +16,10 @@ String.include CoreExtensions::String::Hueby
 describe "Hueby" do
   let(:t) { "TEXT" }
 
+  describe "#colors" do
+    it "returns a list of defined colors"
+  end
+
   describe "#define_color" do
     it 'returns true if no methods defined' do
       result = Hueby.define_color("nothing", [0, 0, 0])

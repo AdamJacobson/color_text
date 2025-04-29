@@ -45,7 +45,7 @@ class Hueby
     end
   end
 
-  def color_table
+  def self.color_table
     padded_string = proc { |n| n.to_s.pad_to(5) + " " }
 
     puts (0..7).to_a.map { |i| padded_string[i].on(i) }.join
