@@ -46,46 +46,36 @@ class Hueby
   end
 
   def self.color_table
-    padded_string = proc { |n| n.to_s.pad_to(5) + " " }
+    padded_string = proc { |n| (n.to_s.pad_to(5) + " ").on(n) }
 
-    puts (0..7).to_a.map { |i| padded_string[i].on(i) }.join
-    puts (8..15).to_a.map { |i| padded_string[i].on(i).in(0) }.join
+    puts "Basic Colors:"
+    puts (0..7).to_a.map { |i| padded_string[i] }.join
+    puts (8..15).to_a.map { |i| padded_string[i].in(0) }.join
 
-    puts "\n"
+    puts "\n8-bit Colors:"
 
-    starts = [
-      16, 52, 88, 124, 160, 196,
-      22, 58, 94, 130, 166, 202,
-      28, 64, 100, 136, 172, 208
-    ]
-
-    starts.each.with_index do |s, row|
-      x = s
-
+    row_start_values = {16 => nil, 34 => :black}
+    row_start_values.each do |row_start_value, text_color|
       6.times do
-        print padded_string[x].on(x)
-        x += 1
+        cell_value = row_start_value
+        18.times do |column|
+          print "   " if column > 0 && column % 6 == 0
+          padded = padded_string[cell_value]
+          print text_color ? padded.in(text_color) : padded
+          cell_value += 1
+        end
+        puts "\n"
+        row_start_value += 36
       end
-
-      print "   "
-
-      x += 12
-
-      6.times do
-        print padded_string[x].on(x).in(0)
-        x += 1
-      end
-
       puts "\n"
-      puts "\n" if (row + 1) % 6 == 0
     end
 
-    puts (232..243).to_a.map { |i| padded_string[i].on(i) }.join
-    puts (244..255).to_a.map { |i| padded_string[i].on(i).in(0) }.join
+    puts "Greyscale:"
+    puts (232..243).to_a.map { |i| padded_string[i] }.join
+    puts (244..255).to_a.map { |i| padded_string[i].in(0) }.join
 
-    print "\n"
+    nil
   end
-
 end
 
 # TODO - FOR TESTING ONLY

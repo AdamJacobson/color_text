@@ -19,7 +19,6 @@ After this, the String class will now include new methods to style your strings.
 ### Change text style
 
 ```ruby
- :default,
  :bold,
  :dim,
  :italic,
@@ -48,6 +47,7 @@ After this, the String class will now include new methods to style your strings.
  :bright_cyan,
  :bright_white
 ```
+
 ### Change background color
 ```ruby
  :on_black,
@@ -66,6 +66,11 @@ After this, the String class will now include new methods to style your strings.
  :on_bright_magenta,
  :on_bright_cyan,
  :on_bright_white,
+```
+
+### Remove any applied styles (NOT YET IMPLEMENTED)
+```ruby
+ :default
 ```
 
 All methods return the altered string and are, therefore, chainable. The original string value will not be modified.
@@ -102,7 +107,7 @@ Styles can be specified in the following ways:
 
 _These colors can be previewed using `Hueby.color_table`_
 
-![alt text](color_table.png)
+![alt text](images/color_table.png)
 
 - As a string representing a hex color
 
@@ -176,11 +181,11 @@ Hueby.define_color("split", 99, create_methods: true)
 
 The `rainbow` method will colorize each character in a string with a different one of the 6 base colors aside from white and black.
 
-![alt text](rainbow_1.png)
+![alt text](images/rainbow_1.png)
 
 It also accepts an argument to split the string on and will apply the coloring to each part.
 
-![alt text](rainbow_2.png)
+![alt text](images/rainbow_2.png)
 
 # Future Improvements
 
