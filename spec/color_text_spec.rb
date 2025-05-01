@@ -63,7 +63,7 @@ describe "Hueby" do
     it 'raises an error when creating color method would overwrite an existing method' do
       expect{ Hueby.define_color("split", 100, create_methods: true) }.to raise_error(StandardError, /cannot define.*split/i)
     end
-    
+
     it 'raises an error when passed an invalid color' do
       expect{ Hueby.define_color("epsilon", "kinda purple") }.to raise_error
       expect{ Hueby.define_color("delta", [1]) }.to raise_error
@@ -173,6 +173,15 @@ describe String do
   #   expect(base).to eq("\e[33mYELLOW\e[31;33mRED\e[0m\e[34;33mBLUE\e[0m\e[0m")
   # end
 
+  it "simplifies codes by removing ones that are overridden" # do
+  #   expect(t.red.yellow).to eq(t.yellow)
+  #   expect(t.bold.red.yellow).to eq(t.bold.yellow)
+  # end
+
+  it "simplifies codes by combining codes when possible" # do
+  #   expect(t.red + t.red).to eq((t + t).red)
+  # end
+
   it 'recognizes other named colors as foreground or background' do
     expect(t.gold).to       have_ansi_encoding(t, 38, 2, 255, 215, 0)
     expect(t.crimson).to    have_ansi_encoding(t, 38, 2, 220, 20, 60)
@@ -238,6 +247,24 @@ describe String do
       expect{ t.in(false) }.to     raise_error(ArgumentError)
       expect{ t.in(14.8) }.to      raise_error(ArgumentError)
       expect{ t.in("F29C0A") }.to  raise_error(ArgumentError)
+    end
+  end
+
+  describe '#in?' do
+    it 'checks if the text is the given color' do
+      it 'returns false if none of the string is'
+      it 'returns false only some of the string is'
+      it 'returns true only all of the string is'
+
+      it 'for hex codes'
+      it 'for RGB arrays'
+    end
+  end
+
+  describe '#on?' do
+    it 'checks if the text background is the given color' do
+      it 'for hex codes'
+      it 'for RGB arrays'
     end
   end
 

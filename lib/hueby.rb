@@ -46,15 +46,17 @@ class Hueby
   end
 
   def self.color_table
-    padded_string = proc { |n| (n.to_s.pad_to(5) + " ").on(n) }
+    padded_string = proc { |v, len| (v.to_s.pad_to(len || 5) + " ").on(v) }
 
-    puts "Basic Colors:"
-    puts (0..7).to_a.map { |i| padded_string[i] }.join
-    puts (8..15).to_a.map { |i| padded_string[i].in(0) }.join
+    puts "Standard colors compared with a hex equivalent. NOTE: These can be affected by your terminal settings."
+    puts "Basic:  " + (0..7).map { |v| padded_string[v, 8].in("#FFFFFF") }.join
+    standard_hex_colors = %w[#000000 #FF0000 #00FF00 #FFFF00 #0000FF #FF00FF #00FFFF #FFFFFF]
+    puts "Hex:    " + standard_hex_colors.map { |hex| (hex + " ").pad_to(9).on(hex) }.join
+    puts "Bright: " + (8..15).map { |v| padded_string[v, 8].in("#000000") }.join
 
     puts "\n8-bit Colors:"
 
-    row_start_values = {16 => nil, 34 => :black}
+    row_start_values = {16 => "#FFFFFF", 34 => "#000000"}
     row_start_values.each do |row_start_value, text_color|
       6.times do
         cell_value = row_start_value
@@ -77,6 +79,3 @@ class Hueby
     nil
   end
 end
-
-# TODO - FOR TESTING ONLY
-String.include CoreExtensions::String::Hueby
