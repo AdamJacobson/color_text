@@ -1,4 +1,12 @@
 color_name,hex_code
+black,#000
+red,#F00
+green,#0F0
+yellow,#FF0
+blue,#00F
+magenta,#F0F
+cyan,#0FF
+white,#FFF
 aliceblue,#f0f8ff
 antiquewhite,#faebd7
 aqua,#00ffff

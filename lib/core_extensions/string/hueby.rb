@@ -17,41 +17,41 @@ module CoreExtensions
       }
 
       BASE_COLORS = {
-        "black" =>          30,
-        "red" =>            31,
-        "green" =>          32,
-        "yellow" =>         33,
-        "blue" =>           34,
-        "magenta" =>        35,
-        "cyan" =>           36,
-        "white" =>          37,
-        "bright_black" =>   90,
-        "bright_red" =>     91,
-        "bright_green" =>   92,
-        "bright_yellow" =>  93,
-        "bright_blue" =>    94,
-        "bright_magenta" => 95,
-        "bright_cyan" =>    96,
-        "bright_white" =>   97,
+        "term_black" =>          30,
+        "term_red" =>            31,
+        "term_green" =>          32,
+        "term_yellow" =>         33,
+        "term_blue" =>           34,
+        "term_magenta" =>        35,
+        "term_cyan" =>           36,
+        "term_white" =>          37,
+        "term_bright_black" =>   90,
+        "term_bright_red" =>     91,
+        "term_bright_green" =>   92,
+        "term_bright_yellow" =>  93,
+        "term_bright_blue" =>    94,
+        "term_bright_magenta" => 95,
+        "term_bright_cyan" =>    96,
+        "term_bright_white" =>   97,
       }
 
       BACKGROUND_COLORS = {
-        "on_black" =>          40,
-        "on_red" =>            41,
-        "on_green" =>          42,
-        "on_yellow" =>         43,
-        "on_blue" =>           44,
-        "on_magenta" =>        45,
-        "on_cyan" =>           46,
-        "on_white" =>          47,
-        "on_bright_black" =>   100,
-        "on_bright_red" =>     101,
-        "on_bright_green" =>   102,
-        "on_bright_yellow" =>  103,
-        "on_bright_blue" =>    104,
-        "on_bright_magenta" => 105,
-        "on_bright_cyan" =>    106,
-        "on_bright_white" =>   107,
+        "on_term_black" =>          40,
+        "on_term_red" =>            41,
+        "on_term_green" =>          42,
+        "on_term_yellow" =>         43,
+        "on_term_blue" =>           44,
+        "on_term_magenta" =>        45,
+        "on_term_cyan" =>           46,
+        "on_term_white" =>          47,
+        "on_term_bright_black" =>   100,
+        "on_term_bright_red" =>     101,
+        "on_term_bright_green" =>   102,
+        "on_term_bright_yellow" =>  103,
+        "on_term_bright_blue" =>    104,
+        "on_term_bright_magenta" => 105,
+        "on_term_bright_cyan" =>    106,
+        "on_term_bright_white" =>   107,
       }
 
       START_CODE = "\e["
@@ -108,8 +108,8 @@ module CoreExtensions
         colorize_with_argument(BACKGROUND, style)
       end
 
-      def rainbow(delimiter = "")
-        colors = %i[ red green yellow blue magenta cyan ]
+      def rainbow(delimiter = "", colors: nil)
+        colors ||= %i[ red green yellow blue magenta cyan ]
         self.split(delimiter).map.with_index { |char, i| char.send(colors[i % colors.length]) }.join(delimiter)
       end
 

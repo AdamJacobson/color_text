@@ -50,7 +50,7 @@ class Hueby
 
     puts "Basic colors defined by the terminal compared with a hex equivalent."
     puts "Basic:  " + (0..7).map { |v| padded_string[v, 8].in("#FFFFFF") }.join
-    standard_hex_colors = %w[#000000 #FF0000 #00FF00 #FFFF00 #0000FF #FF00FF #00FFFF #FFFFFF]
+    standard_hex_colors = %w[#000 #F00 #0F0 #FF0 #00F #F0F #0FF #FFF]
     puts "Hex:    " + standard_hex_colors.map { |hex| (hex + " ").pad_to(9).on(hex) }.join
     puts "Bright: " + (8..15).map { |v| padded_string[v, 8].in("#000000") }.join
 

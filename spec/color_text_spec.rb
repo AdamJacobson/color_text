@@ -42,17 +42,17 @@ describe "Hueby" do
       expect(methods).to eq([:hexi, :on_hexi])
       expect(t.in("hexi")).to have_ansi_encoding(t, 38, 2, 144, 238, 144)
       expect(t.hexi).to       have_ansi_encoding(t, 38, 2, 144, 238, 144)
-      
+
       expect(t.on(:hexi)).to have_ansi_encoding(t, 48, 2, 144, 238, 144)
       expect(t.on_hexi).to   have_ansi_encoding(t, 48, 2, 144, 238, 144)
     end
-    
+
     it 'can define colors as short hexidecimal' do
       methods = Hueby.define_color(:short_hexi, "#ABC", create_methods: true)
       expect(methods).to eq([:short_hexi, :on_short_hexi])
       expect(t.in("short_hexi")).to have_ansi_encoding(t, 38, 2, 170, 187, 204)
       expect(t.short_hexi).to       have_ansi_encoding(t, 38, 2, 170, 187, 204)
-      
+
       expect(t.on(:short_hexi)).to have_ansi_encoding(t, 48, 2, 170, 187, 204)
       expect(t.on_short_hexi).to   have_ansi_encoding(t, 48, 2, 170, 187, 204)
     end
@@ -112,53 +112,55 @@ end
 describe String do
   let(:t) { "TEXT" }
 
-  it 'applies basic colors to text' do
-    expect(t.black).to          have_ansi_encoding(t, 30)
-    expect(t.red).to            have_ansi_encoding(t, 31)
-    expect(t.green).to          have_ansi_encoding(t, 32)
-    expect(t.yellow).to         have_ansi_encoding(t, 33)
-    expect(t.blue).to           have_ansi_encoding(t, 34)
-    expect(t.magenta).to        have_ansi_encoding(t, 35)
-    expect(t.cyan).to           have_ansi_encoding(t, 36)
-    expect(t.white).to          have_ansi_encoding(t, 37)
-    expect(t.bright_black).to   have_ansi_encoding(t, 90)
-    expect(t.bright_red).to     have_ansi_encoding(t, 91)
-    expect(t.bright_green).to   have_ansi_encoding(t, 92)
-    expect(t.bright_yellow).to  have_ansi_encoding(t, 93)
-    expect(t.bright_blue).to    have_ansi_encoding(t, 94)
-    expect(t.bright_magenta).to have_ansi_encoding(t, 95)
-    expect(t.bright_cyan).to    have_ansi_encoding(t, 96)
-    expect(t.bright_white).to   have_ansi_encoding(t, 97)
-  end
+  describe "basic terminal defined ANSI styles" do
+    it "can be applied to text foreground" do
+      expect(t.term_black).to          have_ansi_encoding(t, 30)
+      expect(t.term_red).to            have_ansi_encoding(t, 31)
+      expect(t.term_green).to          have_ansi_encoding(t, 32)
+      expect(t.term_yellow).to         have_ansi_encoding(t, 33)
+      expect(t.term_blue).to           have_ansi_encoding(t, 34)
+      expect(t.term_magenta).to        have_ansi_encoding(t, 35)
+      expect(t.term_cyan).to           have_ansi_encoding(t, 36)
+      expect(t.term_white).to          have_ansi_encoding(t, 37)
+      expect(t.term_bright_black).to   have_ansi_encoding(t, 90)
+      expect(t.term_bright_red).to     have_ansi_encoding(t, 91)
+      expect(t.term_bright_green).to   have_ansi_encoding(t, 92)
+      expect(t.term_bright_yellow).to  have_ansi_encoding(t, 93)
+      expect(t.term_bright_blue).to    have_ansi_encoding(t, 94)
+      expect(t.term_bright_magenta).to have_ansi_encoding(t, 95)
+      expect(t.term_bright_cyan).to    have_ansi_encoding(t, 96)
+      expect(t.term_bright_white).to   have_ansi_encoding(t, 97)
+    end
 
-  it 'applies basic background colors to text' do
-    expect(t.on_black).to          have_ansi_encoding(t, 40)
-    expect(t.on_red).to            have_ansi_encoding(t, 41)
-    expect(t.on_green).to          have_ansi_encoding(t, 42)
-    expect(t.on_yellow).to         have_ansi_encoding(t, 43)
-    expect(t.on_blue).to           have_ansi_encoding(t, 44)
-    expect(t.on_magenta).to        have_ansi_encoding(t, 45)
-    expect(t.on_cyan).to           have_ansi_encoding(t, 46)
-    expect(t.on_white).to          have_ansi_encoding(t, 47)
-    expect(t.on_bright_black).to   have_ansi_encoding(t, 100)
-    expect(t.on_bright_red).to     have_ansi_encoding(t, 101)
-    expect(t.on_bright_green).to   have_ansi_encoding(t, 102)
-    expect(t.on_bright_yellow).to  have_ansi_encoding(t, 103)
-    expect(t.on_bright_blue).to    have_ansi_encoding(t, 104)
-    expect(t.on_bright_magenta).to have_ansi_encoding(t, 105)
-    expect(t.on_bright_cyan).to    have_ansi_encoding(t, 106)
-    expect(t.on_bright_white).to   have_ansi_encoding(t, 107)
-  end
+    it "can be applied to text background" do
+      expect(t.on_term_black).to          have_ansi_encoding(t, 40)
+      expect(t.on_term_red).to            have_ansi_encoding(t, 41)
+      expect(t.on_term_green).to          have_ansi_encoding(t, 42)
+      expect(t.on_term_yellow).to         have_ansi_encoding(t, 43)
+      expect(t.on_term_blue).to           have_ansi_encoding(t, 44)
+      expect(t.on_term_magenta).to        have_ansi_encoding(t, 45)
+      expect(t.on_term_cyan).to           have_ansi_encoding(t, 46)
+      expect(t.on_term_white).to          have_ansi_encoding(t, 47)
+      expect(t.on_term_bright_black).to   have_ansi_encoding(t, 100)
+      expect(t.on_term_bright_red).to     have_ansi_encoding(t, 101)
+      expect(t.on_term_bright_green).to   have_ansi_encoding(t, 102)
+      expect(t.on_term_bright_yellow).to  have_ansi_encoding(t, 103)
+      expect(t.on_term_bright_blue).to    have_ansi_encoding(t, 104)
+      expect(t.on_term_bright_magenta).to have_ansi_encoding(t, 105)
+      expect(t.on_term_bright_cyan).to    have_ansi_encoding(t, 106)
+      expect(t.on_term_bright_white).to   have_ansi_encoding(t, 107)
+    end
 
-  it 'is chainable and combines base color text with base color backgrounds' do
-    expect(t.red.on_white).to        have_ansi_encoding(t, 31, 47)
-    expect(t.black.on_bright_red).to have_ansi_encoding(t, 30, 101)
-    expect(t.magenta.on_green).to    have_ansi_encoding(t, 35, 42)
-  end
+    it 'are chainable and combine foreground and background' do
+      expect(t.term_red.on_term_white).to        have_ansi_encoding(t, 31, 47)
+      expect(t.term_black.on_term_bright_red).to have_ansi_encoding(t, 30, 101)
+      expect(t.term_magenta.on_term_green).to    have_ansi_encoding(t, 35, 42)
+    end
 
-  it 'applies text styles' do
-    expect(t.bold).to      have_ansi_encoding(t, 1)
-    expect(t.underline).to have_ansi_encoding(t, 4)
+    it 'applies text styles' do
+      expect(t.bold).to      have_ansi_encoding(t, 1)
+      expect(t.underline).to have_ansi_encoding(t, 4)
+    end
   end
 
   it "doesn't alter the original string" do
@@ -201,14 +203,17 @@ describe String do
 
   describe '#in' do
     it 'can colorize a string with a named color as symbol or string' do
-      expect(t.in(:red)).to           have_ansi_encoding(t, 31)
-      expect(t.in("green")).to        have_ansi_encoding(t, 32)
-      expect(t.in(:yellow)).to        have_ansi_encoding(t, 33)
-      expect(t.in("bLUe")).to         have_ansi_encoding(t, 34)
-      expect(t.in(:MaGenTa)).to       have_ansi_encoding(t, 35)
-      expect(t.in("cyan")).to         have_ansi_encoding(t, 36)
-      expect(t.in(:bright_cyan)).to   have_ansi_encoding(t, 96)
-      expect(t.in("BRIGHT_BLUE")).to  have_ansi_encoding(t, 94)
+      expect(t.in(:term_red)).to      have_ansi_encoding(t, 31)
+      expect(t.in("TERM_bright_RED")).to      have_ansi_encoding(t, 91)
+      expect(t.in(:term_WHITE)).to      have_ansi_encoding(t, 37)
+      expect(t.in("TERM_bright_white")).to      have_ansi_encoding(t, 97)
+
+      expect(t.in(:red)).to           have_ansi_encoding(t, 38, 2, 255, 0, 0)
+      expect(t.in("green")).to        have_ansi_encoding(t, 38, 2, 0, 255, 0)
+      expect(t.in(:yellow)).to        have_ansi_encoding(t, 38, 2, 255, 255, 0)
+      expect(t.in("bLUe")).to         have_ansi_encoding(t, 38, 2, 0, 0, 255)
+      expect(t.in(:MaGenTa)).to       have_ansi_encoding(t, 38, 2, 255, 0, 255)
+      expect(t.in("cyan")).to         have_ansi_encoding(t, 38, 2, 0, 255, 255)
     end
 
     it 'can apply styles' do
@@ -217,7 +222,7 @@ describe String do
     end
 
     it 'accepts multiple distinct basic styles' do
-      expect(t.in("red", :bold)).to have_ansi_encoding(t, 31, 1)
+      expect(t.in("term_red", :bold)).to have_ansi_encoding(t, 31, 1)
     end
 
     it 'accepts multiple complex styles' do
@@ -294,12 +299,12 @@ describe String do
     end
 
     it 'can colorize a string background with a named color as symbol or string' do
-      expect(t.on(:red)).to           have_ansi_encoding(t, 41)
-      expect(t.on("green")).to        have_ansi_encoding(t, 42)
-      expect(t.on(:yellow)).to        have_ansi_encoding(t, 43)
-      expect(t.on("cyan")).to         have_ansi_encoding(t, 46)
-      expect(t.on(:bright_cyan)).to   have_ansi_encoding(t, 106)
-      expect(t.on("bright_blue")).to  have_ansi_encoding(t, 104)
+      expect(t.on(:term_red)).to           have_ansi_encoding(t, 41)
+      expect(t.on("term_green")).to        have_ansi_encoding(t, 42)
+      expect(t.on(:term_yellow)).to        have_ansi_encoding(t, 43)
+      expect(t.on("term_cyan")).to         have_ansi_encoding(t, 46)
+      expect(t.on(:term_bright_cyan)).to   have_ansi_encoding(t, 106)
+      expect(t.on("term_bright_blue")).to  have_ansi_encoding(t, 104)
     end
 
     context 'other named colors' do
@@ -342,15 +347,26 @@ describe String do
 
   describe "#rainbow" do
     it "colorizes each character" do
-      expect(t.rainbow).to match(/(\e\[\d{2}m\w{1}\e\[0m)+/)
+      expect(t.rainbow).to match(/(\e\[38;2;\d{1,3};\d{1,3};\d{1,3}m\w{1}\e\[0m){4}/)
     end
 
     it "colorizes each word" do
-      input = %w[LOREM IPSUM DOLOR]
-      result = input.join(" ").rainbow(" ").split(" ")
-      expect(result[0]).to match(/\e\[\d{2}m#{input[0]}\e\[0m/)
-      expect(result[1]).to match(/\e\[\d{2}m#{input[1]}\e\[0m/)
-      expect(result[2]).to match(/\e\[\d{2}m#{input[2]}\e\[0m/)
+      input = "LOREM IPSUM DOLOR"
+      result = input.rainbow(" ").split(" ")
+
+      expect(result[0]).to have_ansi_encoding("LOREM", 38, 2, 255, 0, 0)
+      expect(result[1]).to have_ansi_encoding("IPSUM", 38, 2, 0, 255, 0)
+      expect(result[2]).to have_ansi_encoding("DOLOR", 38, 2, 255, 255, 0)
+    end
+
+    it "accepts a list of any named colors" do
+      input = "LOREM IPSUM DOLOR"
+      colors = %i[chocolate gold lightskyblue]
+      result = input.rainbow(" ", colors: colors).split(" ")
+
+      expect(result[0]).to have_ansi_encoding("LOREM", 38, 2, 210, 105, 30)
+      expect(result[1]).to have_ansi_encoding("IPSUM", 38, 2, 255, 215, 0)
+      expect(result[2]).to have_ansi_encoding("DOLOR", 38, 2, 135, 206, 250)
     end
   end
 
@@ -450,15 +466,15 @@ describe String do
   describe "helper methods" do
     describe "ansi_code_indices" do
       it "returns the ending indicies of all starting codes" do
-        expect("R".red.send(:ansi_code_indices)).to eq([4])
-        expect(("R".red + "B".blue).send(:ansi_code_indices)).to eq([4, 14])
+        expect("R".term_red.send(:ansi_code_indices)).to eq([4])
+        expect(("R".term_red + "B".term_blue).send(:ansi_code_indices)).to eq([4, 14])
         expect("IDKLOL".send(:ansi_code_indices)).to eq([])
       end
     end
 
     describe "append_to_existing_ansi_codes" do
       it "modifies all existing codes" do
-        ex = "RED".red + "BLUE".blue
+        ex = "RED".term_red + "BLUE".term_blue
         expect(ex.send(:append_to_existing_ansi_codes, "99")).to eq("\e[31;99mRED\e[0m\e[34;99mBLUE\e[0m")
       end
 
