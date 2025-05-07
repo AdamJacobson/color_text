@@ -192,17 +192,16 @@ module CoreExtensions
       end
 
       def rgb_255_from_hexidecimal(hex)
-        match = hex.match(/^#([a-zA-Z0-9]{6})$/)
-        if match
-          nums = match[1]
-          [
-            nums[0..1].to_i(16),
-            nums[2..3].to_i(16),
-            nums[4..5].to_i(16),
-          ]
-        else
-          nil
+        full_length_hex = /^#([a-zA-Z0-9]{2})([a-zA-Z0-9]{2})([a-zA-Z0-9]{2})$/
+        short_hex = /^#([a-zA-Z0-9]{1})([a-zA-Z0-9]{1})([a-zA-Z0-9]{1})$/
+
+        if match = hex.match(full_length_hex)
+          return match.captures.map { |h| h.to_i(16) }
+        elsif match = hex.match(short_hex)
+          return match.captures.map { |h| (h * 2).to_i(16) }
         end
+
+        nil
       end
 
       ENCODED_STRING_PATTERN = /^\e\[\d+(?:;\d*)*/

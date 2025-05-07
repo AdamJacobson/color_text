@@ -42,12 +42,20 @@ describe "Hueby" do
       expect(methods).to eq([:hexi, :on_hexi])
       expect(t.in("hexi")).to have_ansi_encoding(t, 38, 2, 144, 238, 144)
       expect(t.hexi).to       have_ansi_encoding(t, 38, 2, 144, 238, 144)
-
+      
       expect(t.on(:hexi)).to have_ansi_encoding(t, 48, 2, 144, 238, 144)
       expect(t.on_hexi).to   have_ansi_encoding(t, 48, 2, 144, 238, 144)
     end
-
-    it 'can define colors as short hexidecimal'
+    
+    it 'can define colors as short hexidecimal' do
+      methods = Hueby.define_color(:short_hexi, "#ABC", create_methods: true)
+      expect(methods).to eq([:short_hexi, :on_short_hexi])
+      expect(t.in("short_hexi")).to have_ansi_encoding(t, 38, 2, 170, 187, 204)
+      expect(t.short_hexi).to       have_ansi_encoding(t, 38, 2, 170, 187, 204)
+      
+      expect(t.on(:short_hexi)).to have_ansi_encoding(t, 48, 2, 170, 187, 204)
+      expect(t.on_short_hexi).to   have_ansi_encoding(t, 48, 2, 170, 187, 204)
+    end
 
     it 'can be defined as a single digit color' do
       methods = Hueby.define_color(:ninety_nine, 99, create_methods: true)
@@ -305,6 +313,10 @@ describe String do
 
     it 'accepts hex colors' do
       expect(t.on("#F20CAA")).to have_ansi_encoding(t, 48, 2, 242, 12, 170)
+    end
+
+    it 'accepts short hex colors' do
+      expect(t.on("#F20")).to have_ansi_encoding(t, 48, 2, 255, 34, 0)
     end
 
     it 'raises error for unrecognized colors' do
