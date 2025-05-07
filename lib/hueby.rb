@@ -48,7 +48,7 @@ class Hueby
   def self.color_table
     padded_string = proc { |v, len| (v.to_s.pad_to(len || 5) + " ").on(v) }
 
-    puts "Standard colors compared with a hex equivalent. NOTE: These can be affected by your terminal settings."
+    puts "Basic colors defined by the terminal compared with a hex equivalent."
     puts "Basic:  " + (0..7).map { |v| padded_string[v, 8].in("#FFFFFF") }.join
     standard_hex_colors = %w[#000000 #FF0000 #00FF00 #FFFF00 #0000FF #FF00FF #00FFFF #FFFFFF]
     puts "Hex:    " + standard_hex_colors.map { |hex| (hex + " ").pad_to(9).on(hex) }.join
@@ -79,3 +79,7 @@ class Hueby
     nil
   end
 end
+
+# TODO - FOR TESTING ONLY
+String.include CoreExtensions::String::Hueby
+Hueby.color_table

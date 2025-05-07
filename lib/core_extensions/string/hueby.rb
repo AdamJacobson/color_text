@@ -113,10 +113,33 @@ module CoreExtensions
         self.split(delimiter).map.with_index { |char, i| char.send(colors[i % colors.length]) }.join(delimiter)
       end
 
-      def pad_to(length)
-        remaining = length - self.length
-        return self if remaining < 1
-        " " * remaining + self
+      # Add `padding` number of spaces around the string
+      def pad(padding, rule=:left, spacer: " ")
+        raise ArgumentError.new("Spacer can be only one character.") if spacer.length > 1
+
+        return self if padding < 1
+
+        case rule
+        when :right
+          self + spacer * padding
+        when :center, :center_left
+          left = (padding / 2.0).ceil
+          right = padding - left
+          spacer * left + self + spacer * right
+        when :center_right
+          right = (padding / 2.0).ceil
+          left = padding - right
+          spacer * left + self + spacer * right
+        else
+          spacer * padding + self
+        end
+      end
+
+      def pad_to(length, rule=:left, spacer: " ")
+        padding_needed = length - self.length
+        return self if padding_needed < 1
+
+        return pad(padding_needed, rule, spacer: spacer)
       end
 
       private

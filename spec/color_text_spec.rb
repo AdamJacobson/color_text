@@ -47,6 +47,8 @@ describe "Hueby" do
       expect(t.on_hexi).to   have_ansi_encoding(t, 48, 2, 144, 238, 144)
     end
 
+    it 'can define colors as short hexidecimal'
+
     it 'can be defined as a single digit color' do
       methods = Hueby.define_color(:ninety_nine, 99, create_methods: true)
       expect(methods).to eq([:ninety_nine, :on_ninety_nine])
@@ -242,6 +244,10 @@ describe String do
       expect(t.in("#F29C0A")).to have_ansi_encoding(t, 38, 2, 242, 156, 10)
     end
 
+    it 'accepts short hex colors' do
+      expect(t.in("#F20")).to have_ansi_encoding(t, 38, 2, 255, 34, 0)
+    end
+
     it 'raises an error with invalid arguments' do
       expect{ t.in }.to            raise_error(ArgumentError)
       expect{ t.in(false) }.to     raise_error(ArgumentError)
@@ -251,7 +257,7 @@ describe String do
   end
 
   describe '#in?' do
-    it 'checks if the text is the given color' do
+    describe 'checks if the text is the given color' do
       it 'returns false if none of the string is'
       it 'returns false only some of the string is'
       it 'returns true only all of the string is'
@@ -262,7 +268,7 @@ describe String do
   end
 
   describe '#on?' do
-    it 'checks if the text background is the given color' do
+    describe 'checks if the text background is the given color' do
       it 'for hex codes'
       it 'for RGB arrays'
     end
@@ -334,6 +340,99 @@ describe String do
       expect(result[1]).to match(/\e\[\d{2}m#{input[1]}\e\[0m/)
       expect(result[2]).to match(/\e\[\d{2}m#{input[2]}\e\[0m/)
     end
+  end
+
+  describe "pad" do
+    it "does nothing if 0 or less padding required" do
+      expect(t.pad(0)).to eq(t)
+    end
+
+    it "uses the given spacer" do
+      expect(t.pad(2, spacer: "_")).to eq("__" + t)
+      expect(t.pad(2, :right, spacer: "_")).to eq(t + "__")
+      expect(t.pad(2, :center, spacer: "_")).to eq("_" + t + "_")
+    end
+
+    it "handles complex cases" do
+      a = "X".pad(2, :center)
+      expect(a).to eq(" X ")
+
+      b = a.pad(2, :center, spacer: "|")
+      expect(b).to eq("| X |")
+
+      c = b.pad(4, :center, spacer: "-")
+      expect(c).to eq("--| X |--")
+    end
+
+    it "adds padding to the left by default" do
+      expect(t.pad(1)).to eq(" " + t)
+      expect(t.pad(2)).to eq("  " + t)
+    end
+
+    it "adds padding to the right when specified" do
+      expect(t.pad(1, :right)).to eq(t + " ")
+      expect(t.pad(2, :right)).to eq(t + "  ")
+    end
+
+    it "adds padding on both sides favoring the left first" do
+      expect(t.pad(1, :center)).to eq(" " + t)
+      expect(t.pad(2, :center)).to eq(" " + t + " ")
+    end
+
+    it "adds padding on both sides favoring the right first" do
+      expect(t.pad(1, :center_right)).to eq(t + " ")
+      expect(t.pad(2, :center_right)).to eq(" " + t + " ")
+    end
+  end
+
+  describe "pad_to" do
+    it "does nothing if already at given length" do
+      padded = t.pad_to(4)
+      expect(padded.length).to eq(4)
+      expect(padded).to eq(t)
+    end
+
+    it "adds as many spaces on the left as needed to reach the given length" do
+      padded = t.pad_to(6)
+      expect(padded.length).to eq(6)
+      expect(padded).to eq("  " + t)
+    end
+
+    it "can pad strings on the right" do
+      padded = t.pad_to(6, :right)
+      expect(padded.length).to eq(6)
+      expect(padded).to eq(t + "  ")
+    end
+
+    describe "centering with :center" do
+      it "pads strings evenly when there is an even number of spaces required" do
+        padded = t.pad_to(6, :center)
+        expect(padded.length).to eq(6)
+        expect(padded).to eq(" " + t + " ")
+      end
+
+      it "pads strings favoring the left when odd number of spaces required" do
+        padded = t.pad_to(7, :center)
+        expect(padded.length).to eq(7)
+        expect(padded).to eq("  " + t + " ")
+      end
+    end
+
+    describe "centering with :center_right" do
+      it "pads strings evenly when there is an even number of spaces required" do
+        padded = t.pad_to(6, :center_right)
+        expect(padded.length).to eq(6)
+        expect(padded).to eq(" " + t + " ")
+      end
+
+      it "pads strings favoring the right when odd number of spaces required" do
+        padded = t.pad_to(7, :center_right)
+        expect(padded.length).to eq(7)
+        expect(padded).to eq(" " + t + "  ")
+      end
+    end
+
+    it "can pad strings with a given spacer"
   end
 
   describe "helper methods" do

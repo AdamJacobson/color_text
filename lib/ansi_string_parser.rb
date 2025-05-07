@@ -1,5 +1,5 @@
 # Used to parse strings with ANSI codes into a format that is easier to modify.
-# Used internally by ColorText. Not required for end user.
+# Used internally by Hueby. Not required for end user.
 class AnsiStringParser
   def initialize(source)
     @source = source
