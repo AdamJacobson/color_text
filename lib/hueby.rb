@@ -1,6 +1,10 @@
 require_relative 'core_extensions/string/hueby'
 
 class Hueby
+  def self.base_dir
+    File.dirname(__FILE__)
+  end
+
   def self.define_color(name, color, create_methods: false)
     defined_methods = []
 
@@ -46,17 +50,27 @@ class Hueby
   end
 
   def self.color_table
-    padded_string = proc { |v, len| (v.to_s.pad_to(len || 5) + " ").on(v) }
+    puts "Here is a list of single digit colors that Hueby recognizes.\n\n"
+    puts "[0 to 11] Basic colors defined by the terminal compared with the ideal hex color."
+    base_colors = %w[black red green yellow blue magenta cyan white]
+    base_colors.each_slice(4) do |slice|
+      puts (slice.map.with_index do |color, i|
+        string = " #{i} (term_#{color})"
+        string.pad_to(25, :right).on("term_#{color}").in(:term_bright_white)
+      end.join)
+      puts slice.map { |color| (" " + color + " (#{String::NAMED_COLORS[color]})").pad_to(25, :right).on(color) }.join
+      puts (slice.map.with_index do |color, i|
+        string = " #{i + 8} (term_bright_#{color})"
+        string.pad_to(25, :right).on("term_bright_#{color}").in(:term_black)
+      end.join)
+      puts "\n"
+    end
 
-    puts "Basic colors defined by the terminal compared with a hex equivalent."
-    puts "Basic:  " + (0..7).map { |v| padded_string[v, 8].in("#FFFFFF") }.join
-    standard_hex_colors = %w[#000 #F00 #0F0 #FF0 #00F #F0F #0FF #FFF]
-    puts "Hex:    " + standard_hex_colors.map { |hex| (hex + " ").pad_to(9).on(hex) }.join
-    puts "Bright: " + (8..15).map { |v| padded_string[v, 8].in("#000000") }.join
+    puts "\n[16 to 231] 8-bit Colors:"
 
-    puts "\n8-bit Colors:"
+    padded_string = proc { |v| (" " + v.to_s.pad_to(5, :right)).on(v) }
 
-    row_start_values = {16 => "#FFFFFF", 34 => "#000000"}
+    row_start_values = {16 => "#FFF", 34 => "#000"}
     row_start_values.each do |row_start_value, text_color|
       6.times do
         cell_value = row_start_value

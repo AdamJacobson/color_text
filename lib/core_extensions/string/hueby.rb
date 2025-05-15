@@ -72,7 +72,7 @@ module CoreExtensions
       }
 
       def self.included(base)
-        csv_data = File.readlines("lib/named_colors.csv")
+        csv_data = File.readlines(::Hueby.base_dir + "/named_colors.csv")
         parsed = CSV.parse(csv_data.join, headers: true)
         parsed.each { |row| ::Hueby.define_color(row["color_name"], row["hex_code"], create_methods: true) }
 
