@@ -8,6 +8,8 @@ class Hueby
   def self.define_color(name, color, create_methods: false)
     defined_methods = []
 
+    return unless valid_color_definition?(color)
+
     if create_methods
       if safe_to_define_color_methods?(name)
         in_method = String.define_method(name) do
@@ -27,6 +29,26 @@ class Hueby
     CoreExtensions::String::Hueby::NAMED_COLORS[name.to_s.downcase] = color
 
     return defined_methods.any? ? defined_methods : true
+  end
+
+  def self.valid_color_definition?(color_def)
+    case color_def
+    when nil
+      raise ArgumentError.new("Invalid style definition: Missing")
+    when Integer
+      return true
+    when Array
+      raise ArgumentError.new("Invalid style definition: Invalid RGB color code: '#{color_def.join(", ")}'") unless color_def.length == 3 && color_def.all?(Integer)
+    when ::String, Symbol
+      normalized = color_def.to_s.downcase
+      unless normalized.match?(/^#[a-zA-Z0-9]{6}$/) || normalized.match?(/^#[a-zA-Z0-9]{3}$/)
+        raise ArgumentError.new("Invalid color representation: #{normalized}") 
+      end
+    else
+      raise ArgumentError.new("Invalid style definition: '#{color_def.inspect}'")
+    end
+
+    true
   end
 
   # Returns true IFF
@@ -93,7 +115,3 @@ class Hueby
     nil
   end
 end
-
-# TODO - FOR TESTING ONLY
-String.include CoreExtensions::String::Hueby
-Hueby.color_table

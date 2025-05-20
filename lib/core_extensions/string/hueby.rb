@@ -16,7 +16,7 @@ module CoreExtensions
         "strikethrough" => 9,
       }
 
-      BASE_COLORS = {
+      TERMINAL_BASE_COLORS = {
         "term_black" =>          30,
         "term_red" =>            31,
         "term_green" =>          32,
@@ -35,25 +35,6 @@ module CoreExtensions
         "term_bright_white" =>   97,
       }
 
-      BACKGROUND_COLORS = {
-        "on_term_black" =>          40,
-        "on_term_red" =>            41,
-        "on_term_green" =>          42,
-        "on_term_yellow" =>         43,
-        "on_term_blue" =>           44,
-        "on_term_magenta" =>        45,
-        "on_term_cyan" =>           46,
-        "on_term_white" =>          47,
-        "on_term_bright_black" =>   100,
-        "on_term_bright_red" =>     101,
-        "on_term_bright_green" =>   102,
-        "on_term_bright_yellow" =>  103,
-        "on_term_bright_blue" =>    104,
-        "on_term_bright_magenta" => 105,
-        "on_term_bright_cyan" =>    106,
-        "on_term_bright_white" =>   107,
-      }
-
       START_CODE = "\e["
       END_CODE = "\e[0m"
 
@@ -61,28 +42,28 @@ module CoreExtensions
         "256_PREFIX" => "48;5",
         "RGB_PREFIX" => "48;2",
         "OFFSET" => 10,
-        "VALID_CODES" => BASE_COLORS,
+        "VALID_CODES" => TERMINAL_BASE_COLORS,
       }
 
       FOREGROUND = {
         "256_PREFIX" => "38;5",
         "RGB_PREFIX" => "38;2",
         "OFFSET" => 0,
-        "VALID_CODES" => BASE_COLORS.merge(TEXT_STYLES),
+        "VALID_CODES" => TERMINAL_BASE_COLORS.merge(TEXT_STYLES),
       }
 
       def self.included(base)
-        csv_data = File.readlines(::Hueby.base_dir + "/named_colors.csv")
-        parsed = CSV.parse(csv_data.join, headers: true)
-        parsed.each { |row| ::Hueby.define_color(row["color_name"], row["hex_code"], create_methods: true) }
-
+        # Define base text styles as forground methods:
+        # ex: "".bold, "".italic
         TEXT_STYLES.each do |style, _|
           define_method(style) do
             self.in(style)
           end
         end
 
-        BASE_COLORS.each do |color, _|
+        # Define text colors using terminal defined colors for both foreground and background:
+        # ex: "".term_red, "".on_term_green
+        TERMINAL_BASE_COLORS.each do |color, _|
           define_method(color) do
             self.in(color)
           end
@@ -91,6 +72,10 @@ module CoreExtensions
             self.on(color)
           end
         end
+
+        csv_data = File.readlines(::Hueby.base_dir + "/named_colors.csv")
+        parsed = CSV.parse(csv_data.join, headers: true)
+        parsed.each { |row| ::Hueby.define_color(row["color_name"], row["hex_code"], create_methods: true) }
       end
 
       def in(*args)
